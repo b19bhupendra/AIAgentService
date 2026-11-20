@@ -1,27 +1,27 @@
 package com.aiagent.controller;
 
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.aiagent.dto.ChatRequest;
+import com.aiagent.service.ChatService;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/agent")
 public class ChatController {
-    //ChatClient — Spring AI abstraction for interacting with the LLM.
-    private final ChatClient chatClient;
+    private final ChatService chatService;
 
-    //ChatClient.Builder — Spring AI automatically configures this using our Gemini dependency and properties.
-    public ChatController(ChatClient.Builder builder){
-        this.chatClient = builder.build();
+    public ChatController(ChatService chatService){
+        this.chatService = chatService;
     }
 
-    //.prompt() —starts a new prompt,user(message) —supplies the user's message,call() —sends the request to Gemini,content() — extracts the generated text.
     @GetMapping("/ai/chat")
     public String chat(@RequestParam String message){
-        return chatClient.prompt()
-                .user(message)
-                .call()
-                .content();
+        return chatService.chat(message);
+    }
+
+    //For own learning
+    @PostMapping("/ai/chatV2")
+    public String chatV2(@Valid @RequestBody ChatRequest chatRequest){
+        return chatService.chat(chatRequest.getMessage());
     }
 }
